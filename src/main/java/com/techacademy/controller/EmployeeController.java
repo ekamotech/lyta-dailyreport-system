@@ -1,17 +1,21 @@
 package com.techacademy.controller;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
@@ -97,6 +101,39 @@ public class EmployeeController {
 
         return "redirect:/employees";
     }
+
+    // 従業員更新画面を表示
+    @GetMapping("/{code}/update")
+    public String getEmployee(@PathVariable String code, Model model) {
+
+        Employee employee = employeeService.findByCode(code);
+        employee.setPassword("");  // パスワードを空に設定
+        model.addAttribute("employee", employee);  // Modelに登録
+
+        // update.htmlに画面遷移
+        return "employees/update";
+    }
+
+    // 従業員更新処理
+    @PostMapping("/{code}/update")
+    public String postEmployee(@PathVariable String code, @Validated Employee employee, @RequestParam("password") String password, BindingResult res, Model model) {
+
+        if (res.hasErrors()) {
+
+            model.addAttribute("employee", employee);  // Modelに登録
+
+            // update.htmlに画面遷移
+            return "employees/update";
+        }
+
+        // 従業員登録
+        // employeeService.save(employee);
+
+        // 一覧画面にリダイレクト
+       return "redirect:/employees";
+    }
+
+
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
