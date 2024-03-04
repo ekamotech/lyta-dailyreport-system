@@ -27,6 +27,32 @@ public class EmployeeService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // 従業員更新
+    @Transactional
+    public ErrorKinds update(Employee employee) {
+
+        Employee storedEmployee = findByCode(employee.getCode());
+
+        if (!"".equals(employee.getPassword())) {
+            // パスワードが空白でない場合はパスワードチェック
+            ErrorKinds result = employeePasswordCheck(employee);
+            if (ErrorKinds.CHECK_OK != result) {
+                return result;
+            }
+        } else {
+            // パスワードが空白の場合はデータベースから取得したパスワードを設定
+            employee.setPassword(storedEmployee.getPassword());
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreatedAt(storedEmployee.getCreatedAt());
+        employee.setUpdatedAt(now);
+        
+        employeeRepository.save(employee);
+
+        return ErrorKinds.SUCCESS;
+    }
+
     // 従業員保存
     @Transactional
     public ErrorKinds save(Employee employee) {

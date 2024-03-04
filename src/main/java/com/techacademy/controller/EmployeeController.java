@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
@@ -104,7 +103,7 @@ public class EmployeeController {
 
     // 従業員更新画面を表示
     @GetMapping("/{code}/update")
-    public String getEmployee(@PathVariable String code, Model model) {
+    public String edit(@PathVariable String code, Model model) {
 
         Employee employee = employeeService.findByCode(code);
         employee.setPassword("");  // パスワードを空に設定
@@ -116,18 +115,22 @@ public class EmployeeController {
 
     // 従業員更新処理
     @PostMapping("/{code}/update")
-    public String postEmployee(@PathVariable String code, @Validated Employee employee, @RequestParam("password") String password, BindingResult res, Model model) {
+    public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
 
         if (res.hasErrors()) {
-
             model.addAttribute("employee", employee);  // Modelに登録
-
             // update.htmlに画面遷移
             return "employees/update";
         }
 
-        // 従業員登録
-        // employeeService.save(employee);
+        // 従業員更新
+        ErrorKinds result = employeeService.update(employee);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            // update.htmlに画面遷移
+            return "employees/update";
+        }
 
         // 一覧画面にリダイレクト
        return "redirect:/employees";
