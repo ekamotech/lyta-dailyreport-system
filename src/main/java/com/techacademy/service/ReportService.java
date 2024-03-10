@@ -1,5 +1,6 @@
 package com.techacademy.service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -56,13 +57,25 @@ public class ReportService {
 
     }
 
-    // 日報詳細表示処理
+    // 1件を検索
     public Report findById(Integer id) {
         // findByIdで検索
         Optional<Report> option = reportRepository.findById(id);
         // 取得できなかった場合はnullを返す
         Report report = option.orElse(null);
         return report;
+    }
+
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(Integer id, UserDetail userDetail) {
+
+        Report report = findById(id);
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        return ErrorKinds.SUCCESS;
     }
 
 

@@ -60,7 +60,20 @@ public class ReportController {
         return "reports/detail";
     }
 
+    // 従業員削除処理
+    @PostMapping(value = "/{id}/delete")
+    public String delete(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
+        ErrorKinds result = reportService.delete(id, userDetail);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            model.addAttribute("report", reportService.findById(id));
+            return detail(id, model);
+        }
+
+        return "redirect:/reports";
+    }
 
 
 
