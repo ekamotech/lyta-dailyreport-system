@@ -8,6 +8,7 @@ import java.util.List;
 // import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,8 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
-
+import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
+import com.techacademy.service.EmployeeService;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
 
@@ -35,10 +37,12 @@ import com.techacademy.service.UserDetail;
 @RequestMapping("reports")
 public class ReportController {
 
+    private final EmployeeService employeeService;
     private final ReportService reportService;
 
     @Autowired
-    public ReportController(ReportService reportService) {
+    public ReportController(EmployeeService employeeService, ReportService reportService) {
+        this.employeeService = employeeService;
         this.reportService = reportService;
     }
 
@@ -73,6 +77,24 @@ public class ReportController {
         }
 
         return "redirect:/reports";
+    }
+
+    // 日報新規登録画面
+    @GetMapping(value = "/add")
+    public String create(@ModelAttribute Report report, Model model) {
+
+        // ログインユーザーの従業員名を取得
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+        String username = userDetail.getUsername();
+        Employee employee = employeeService.findByCode(username);
+        String name = employee.getName();
+        System.out.println(name);
+
+        // ログインユーザーの従業員名をセット
+        model.addAttribute("name", name);
+
+        return "reports/new";
     }
 
 
