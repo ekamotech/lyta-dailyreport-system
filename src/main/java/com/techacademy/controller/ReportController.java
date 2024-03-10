@@ -52,7 +52,13 @@ public class ReportController {
       return "reports/list";
     }
 
+    // 従業員詳細画面
+    @GetMapping(value = "/{id}/")
+    public String detail(@PathVariable Integer id, Model model) {
 
+        model.addAttribute("report", reportService.findById(id));
+        return "reports/detail";
+    }
 
 
 

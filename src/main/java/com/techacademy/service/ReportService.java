@@ -2,6 +2,7 @@ package com.techacademy.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,6 +54,15 @@ public class ReportService {
         // System.out.println("ADMIN権限を持っています");
         return reportRepository.findAll();
 
+    }
+
+    // 日報詳細表示処理
+    public Report findById(Integer id) {
+        // findByIdで検索
+        Optional<Report> option = reportRepository.findById(id);
+        // 取得できなかった場合はnullを返す
+        Report report = option.orElse(null);
+        return report;
     }
 
 
