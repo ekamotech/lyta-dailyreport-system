@@ -26,6 +26,7 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <input class="form-control" type="date" th:field="*{reportDate}" th:errorclass="err" id="date">
+                                            <span th:errors="*{reportDate}" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -40,6 +41,7 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <input class="form-control" type="text" th:field="*{title}" th:errorclass="err" id="title">
+                                            <span th:errors="*{title}" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -47,6 +49,7 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <textarea class="form-control" th:field="*{content}" th:errorclass="err" id="content"></textarea>
+                                            <span th:errors="*{content}" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
