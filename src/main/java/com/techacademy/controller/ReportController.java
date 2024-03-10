@@ -86,10 +86,11 @@ public class ReportController {
         // ログインユーザーの従業員名を取得
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetail userDetail = (UserDetail) authentication.getPrincipal();
-        String username = userDetail.getUsername();
-        Employee employee = employeeService.findByCode(username);
+        String employeeCode = userDetail.getUsername();
+        Employee employee = employeeService.findByCode(employeeCode);
         String name = employee.getName();
         System.out.println(name);
+        System.out.println(employeeCode);
 
         // ログインユーザーの従業員名をセット
         model.addAttribute("name", name);
@@ -101,14 +102,14 @@ public class ReportController {
     @PostMapping(value = "/add")
     public String add(@ModelAttribute @Validated Report report, BindingResult res, Model model) {
 
-      // 入力チェック
-      if (res.hasErrors()) {
-        return create(report, model);
-      }
+        // 入力チェック
+        if (res.hasErrors()) {
+          return create(report, model);
+        }
 
-      System.out.println("入力チェックOK!!");
+        reportService.save(report);
 
-      return "redirect:/reports";
+        return "redirect:/reports";
     }
 
 

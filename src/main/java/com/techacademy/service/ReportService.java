@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,14 +19,18 @@ import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.techacademy.service.EmployeeService;
+
 @Service
 public class ReportService {
 
+    private final EmployeeService employeeService;
     private final ReportRepository reportRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ReportService(ReportRepository reportRepository, PasswordEncoder passwordEncoder) {
+    public ReportService(EmployeeService employeeService, ReportRepository reportRepository, PasswordEncoder passwordEncoder) {
+        this.employeeService = employeeService;
         this.reportRepository = reportRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -75,6 +80,32 @@ public class ReportService {
         report.setUpdatedAt(now);
         report.setDeleteFlg(true);
 
+        return ErrorKinds.SUCCESS;
+    }
+
+    // 日報保存
+    @Transactional
+    public ErrorKinds save(Report report) {
+
+        // ログインユーザーの社員番号を取得
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+        String employeeCode = userDetail.getUsername();
+        System.out.println(employeeCode);
+
+        // Employeeエンティティを取得
+        Employee employee = employeeService.findByCode(employeeCode);
+
+        // EmployeeエンティティをReportエンティティに関連付け
+        report.setEmployee(employee);
+
+        report.setDeleteFlg(false);
+
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(now);
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
         return ErrorKinds.SUCCESS;
     }
 
