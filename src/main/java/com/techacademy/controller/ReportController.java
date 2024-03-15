@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
@@ -118,8 +119,33 @@ public class ReportController {
         return "redirect:/reports";
     }
 
+    // 日報更新画面を表示
+    @GetMapping("/{id}/update")
+    public String edit(@PathVariable Integer id, Model model) {
 
+        model.addAttribute("report", reportService.findById(id));
 
+        return "reports/update";
+    }
+
+    // 日報更新処理
+    @PostMapping("/{id}/update")
+    public String update(@PathVariable Integer id, @ModelAttribute @Validated Report report, BindingResult res, @RequestParam("employeeCode") String employeeCode, Model model) {
+
+        // EmployeeのIDを元にEmployeeオブジェクトを取得
+        Employee employee = employeeService.findByCode(employeeCode);
+        // ReportオブジェクトにEmployeeオブジェクトを設定
+        report.setEmployee(employee);
+
+        // 入力チェック
+        if (res.hasErrors()) {
+            model.addAttribute("report", report);
+            return "reports/update";
+        }
+
+        // 一覧画面にリダイレクト
+        return "redirect:/reports";
+    }
 
 
 
