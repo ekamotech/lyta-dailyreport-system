@@ -27,7 +27,7 @@
                                         <div class="col-md-7">
                                             <input class="form-control" type="date" th:field="*{reportDate}" th:value="${#dates.format(reportDate, 'yyyy-MM-dd')}" th:errorclass="err" id="date">
                                             <span th:errors="*{reportDate}" class="text-danger"></span>
-                                            <!-- <span th:if="${reportDateError} neq null" th:text="${reportDateError}" class="text-danger"></span> -->
+                                            <span th:if="${reportDateError} neq null" th:text="${reportDateError}" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">

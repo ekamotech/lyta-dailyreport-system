@@ -143,6 +143,14 @@ public class ReportController {
             return "reports/update";
         }
 
+        // 日報更新
+        ErrorKinds result = reportService.update(report);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return "reports/update";
+        }
+
         // 一覧画面にリダイレクト
         return "redirect:/reports";
     }

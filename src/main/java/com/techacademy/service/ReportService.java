@@ -118,6 +118,29 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
+    // 日報更新
+    @Transactional
+    public ErrorKinds update(Report report) {
 
+        Report storedReport = findById(report.getId());
+
+        // 画面で表示中の従業員 かつ入力した日付の日報データが存在するか確認
+        // ※画面で表示中の日報データを除いたものについて、上記のチェックを行なう
+        List<Report> existingReports = reportRepository.findAll();
+        for (Report existingReport : existingReports) {
+            if (!existingReport.getId().equals(storedReport.getId()) && existingReport.getEmployee().getCode().equals(report.getEmployee().getCode()) && existingReport.getReportDate().equals(report.getReportDate())) {
+                // 既存の日報データが存在する場合はエラーを返す
+                return ErrorKinds.DATECHECK_ERROR;
+            }
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(storedReport.getCreatedAt());
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
+
+        return ErrorKinds.SUCCESS;
+    }
 
 }
