@@ -104,10 +104,16 @@ public class ReportController {
 
         // 入力チェック
         if (res.hasErrors()) {
-          return create(report, model);
+            return create(report, model);
         }
 
-        reportService.save(report);
+        // 日報保存
+        ErrorKinds result = reportService.save(report);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return create(report, model);
+        }
 
         return "redirect:/reports";
     }

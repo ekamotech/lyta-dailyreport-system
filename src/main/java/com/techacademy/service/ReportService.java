@@ -99,6 +99,15 @@ public class ReportService {
         // EmployeeエンティティをReportエンティティに関連付け
         report.setEmployee(employee);
 
+        // 入力した日付の日報データが存在するか確認
+        List<Report> existingReports = reportRepository.findAll();
+        for (Report existingReport : existingReports) {
+            if (existingReport.getEmployee().getCode().equals(employeeCode) && existingReport.getReportDate().equals(report.getReportDate())) {
+                // 既存の日報データが存在する場合はエラーを返す
+                return ErrorKinds.DATECHECK_ERROR;
+            }
+        }
+
         report.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
