@@ -7,12 +7,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.entity.Employee;
+import com.techacademy.entity.Report;
 import com.techacademy.repository.EmployeeRepository;
+import com.techacademy.repository.ReportRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -20,11 +23,15 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ReportRepository reportRepository;
+    private final ReportService reportService;
 
     @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder, @Lazy ReportRepository reportRepository, @Lazy ReportService reportService) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.reportRepository = reportRepository;
+        this.reportService = reportService;
     }
 
     // 従業員更新
@@ -90,6 +97,15 @@ public class EmployeeService {
         LocalDateTime now = LocalDateTime.now();
         employee.setUpdatedAt(now);
         employee.setDeleteFlg(true);
+
+        // 削除対象の従業員（employee）に紐づいている、日報のリスト（reportList）を取得
+        List<Report> reportList = reportRepository.findReportsByEmployeeCode(code);
+
+        // 日報のリスト（reportList）を拡張for文を使って繰り返し
+        for (Report report : reportList) {
+            // 日報（report）のIDを指定して、日報情報を削除
+            reportService.delete(report.getId(), userDetail);
+        }
 
         return ErrorKinds.SUCCESS;
     }

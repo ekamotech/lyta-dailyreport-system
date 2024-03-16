@@ -19,8 +19,6 @@ import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.techacademy.service.EmployeeService;
-
 @Service
 public class ReportService {
 
